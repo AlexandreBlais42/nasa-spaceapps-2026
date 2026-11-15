@@ -277,6 +277,10 @@ class App(ctk.CTk):
 
         self.displayRegression(x, y)
 
+    def inference(self, x):
+        if self.regressionModel is not None:
+            return self.regressionModel.predict(x)
+
 
 if __name__ == "__main__":
     app = App()
