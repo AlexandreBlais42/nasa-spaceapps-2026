@@ -61,6 +61,8 @@ class App(ctk.CTk):
             self.dataSelectionFrame, text="Parameters", font=("Arial", 24, "bold")
         )
         self.paramsTitle.grid(row=0, column=0)
+        
+        
 
         # parameters
         #location
@@ -85,13 +87,17 @@ class App(ctk.CTk):
         self.longitude1.grid(row=3, column=1, padx=10, pady=5, sticky="w")
         self.longitude2.grid(row=3, column=2, padx=10, pady=5, sticky="w")
         
+        #sampling mode
         ctk.CTkLabel(self.locationFrame, text="Sampling mode").grid(row=4, column=0, padx=10, pady=5, sticky="w")
         self.coordsMode = ctk.StringVar(value="point")        
         def updateCoordsMode():
             if self.coordsMode.get() == "rectangle":
                 self.coordsSwitch.configure(text="Rectangle")
+                self.radiusFrame.grid_remove()
             else:
                 self.coordsSwitch.configure(text="Point")
+                self.radiusFrame.grid()
+                
         self.coordsSwitch = ctk.CTkSwitch(self.locationFrame,
             text="Point",
             variable=self.coordsMode,
@@ -101,19 +107,27 @@ class App(ctk.CTk):
         )
         self.coordsSwitch.grid(row=4, column=1, padx=10, pady=5, sticky="w")
         
+        #largeur autour d'un point
+        self.radiusFrame = ctk.CTkFrame(self.locationFrame, fg_color="transparent")
+        self.radiusFrame.grid(row=4, column=2)
+        ctk.CTkLabel(self.radiusFrame, text="Radius :").grid(row=4, column=0, padx=4, pady=5, sticky="e")
+        self.radius = ctk.CTkEntry(self.radiusFrame, placeholder_text="24", width=60)
+        self.radius.grid(row=4, column=1, padx=4, pady=5, sticky="w")
+        ctk.CTkLabel(self.radiusFrame, text="Km").grid(row=4, column=2, padx=4, pady=5, sticky="w")
         
         
         
-        # height slider
-        self.heightBar = ctk.CTkSlider(
-            self.dataSelectionFrame,
-            from_=0,
-            to=10,
-            number_of_steps=10,
-            command=self.updateHeight,
-        )
-        self.heightBar.grid(row=1, column=0, padx=10, pady=10)
-        self.heightBar.set(0)
+        
+        # # height slider
+        # self.heightBar = ctk.CTkSlider(
+        #     self.dataSelectionFrame,
+        #     from_=0,
+        #     to=10,
+        #     number_of_steps=10,
+        #     command=self.updateHeight,
+        # )
+        # self.heightBar.grid(row=1, column=0, padx=10, pady=10)
+        # self.heightBar.set(0)
 
         # send button
         self.sendRequestButton = ctk.CTkButton(
