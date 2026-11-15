@@ -54,20 +54,44 @@ class App(ctk.CTk):
     def paramsFrameDef(self):
         # frame
         self.dataSelectionFrame = ctk.CTkFrame(self.mainFrame)
-        self.dataSelectionFrame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+        self.dataSelectionFrame.grid(row=0, column=0, sticky="nsw", padx=5, pady=5)
 
         # title
         self.paramsTitle = ctk.CTkLabel(
             self.dataSelectionFrame, text="Parameters", font=("Arial", 24, "bold")
         )
-        self.paramsTitle.grid(row=0, column=0)
-        
-        
-
+        self.paramsTitle.grid(row=0, column=0,sticky="w")
         # parameters
+        
+        #variables
+        self.variablesFrame = ctk.CTkScrollableFrame(self.dataSelectionFrame, width=300)
+        self.variablesFrame.grid(row=1,column=0, padx=10, pady=5,sticky="w")
+        
+        with open("src/variables.txt", 'r') as f:
+            self.variablesList = f.read().splitlines()
+        self.variables = {}
+        self.selected = []
+        self.variablesText = ctk.CTkLabel(self.dataSelectionFrame, text="Variables selected : None")
+        self.variablesText.grid(row=2, column=0, padx=10, pady=5, sticky="w")
+        
+        def updateVar(v):
+            if self.variables[v].get()==1:
+                self.selected.append(v)
+            else:
+                self.selected.remove(v)
+            self.variablesText.configure(text="Variables selected : " + ", ".join(self.selected))
+            
+        for v in self.variablesList:
+            var = ctk.BooleanVar(value=False)
+            self.variables[v] = var
+            ctk.CTkCheckBox(self.variablesFrame, text=v, variable=var, command=lambda v=v: updateVar(v)).pack(anchor="w", padx=10, pady=5)
+        
+        
+        
+        
         #location
         self.locationFrame = ctk.CTkFrame(self.dataSelectionFrame)
-        self.locationFrame.grid(row=2, column=0, sticky="ew")
+        self.locationFrame.grid(row=3, column=0, sticky="ew")
         ctk.CTkLabel(self.locationFrame, text="Location", font=("Comic Sans MS", 18, "bold")).grid(row=0, column=0, padx=10, pady=5, sticky="w")
         
         ctk.CTkLabel(self.locationFrame, text="Region").grid(row=1, column=0, padx=10, pady=5, sticky="w")
@@ -114,6 +138,12 @@ class App(ctk.CTk):
         self.radius = ctk.CTkEntry(self.radiusFrame, placeholder_text="24", width=60)
         self.radius.grid(row=4, column=1, padx=4, pady=5, sticky="w")
         ctk.CTkLabel(self.radiusFrame, text="Km").grid(row=4, column=2, padx=4, pady=5, sticky="w")
+        
+        #Time
+        self.locationFrame = ctk.CTkFrame(self.dataSelectionFrame)
+        self.locationFrame.grid(row=4, column=0, sticky="ew")
+        ctk.CTkLabel(self.locationFrame, text="Time", font=("Comic Sans MS", 18, "bold")).grid(row=0, column=0, padx=10, pady=5, sticky="w")
+        
         
         
         
