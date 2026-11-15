@@ -6,6 +6,18 @@ import regression
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 
+urbanDictionnary = """
+        Montreal    : 45.50884, -73.58781
+        Sherbrooke  : 45.40008, -71.89908
+        Quebec      : 46.82985, -71.25403
+        Toronto     : 43.70011, -79.41630
+        Vancouver   : 49.24966, -123.1193
+        Ottawa      : 45.41117, -75.69812
+        Edmonton    : 53.55014, -113.4687
+        Victoria    : 48.43294, -123.3693
+        Winnipeg    : 49.88440, -97.14704
+        Regina      : 50.45008, -104.6178
+        """
 
 class App(ctk.CTk):
     def __init__(self):
@@ -121,18 +133,7 @@ class App(ctk.CTk):
         self.region = ctk.CTkComboBox(
             self.locationFrame, values=["Montreal", "Sherbrooke", "Quebec", "Toronto", "Vancouver", "Ottawa", "Edmonton", "Victoria", "Winnipeg", "Regina"]
         )
-        """
-        Montreal    : 45.50884, -73.58781
-        Sherbrooke  : 45.40008, -71.89908
-        Quebec      : 46.82985, -71.25403
-        Toronto     : 43.70011, -79.41630
-        Vancouver   : 49.24966, -123.1193
-        Ottawa      : 45.41117, -75.69812
-        Edmonton    : 53.55014, -113.4687
-        Victoria    : 48.43294, -123.3693
-        Winnipeg    : 49.88440, -97.14704
-        Regina      : 50.45008, -104.6178
-        """
+        
         self.region.set("Montreal")
         self.region.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
 
@@ -224,6 +225,7 @@ class App(ctk.CTk):
         self.timeStopMin.grid(row=0,column=4, padx=1,pady=5)
         self.timeStopSec = ctk.CTkEntry(self.timeStopFrame, placeholder_text="SS", width=40)
         self.timeStopSec.grid(row=0,column=5, padx=1,pady=5)
+        self.timeStopFrame.grid_remove()
         
         #sampling mode
         ctk.CTkLabel(self.timeFrame, text="Time mode").grid(row=3, column=0, padx=10, pady=5, sticky="w")
@@ -233,12 +235,12 @@ class App(ctk.CTk):
                 self.timeSwitch.configure(text="period")
                 self.timeStopFrame.grid()
             else:
-                self.timeSwitch.configure(text="period")
+                self.timeSwitch.configure(text="point")
                 self.timeStopFrame.grid_remove()
                 
                 
         self.timeSwitch = ctk.CTkSwitch(self.timeFrame,
-            text="period",
+            text="point",
             variable=self.timeMode,
             onvalue="point",
             offvalue="period",
