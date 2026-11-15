@@ -116,14 +116,14 @@ class App(ctk.CTk):
         self.coordsMode = ctk.StringVar(value="point")        
         def updateCoordsMode():
             if self.coordsMode.get() == "rectangle":
-                self.coordsSwitch.configure(text="Rectangle")
+                self.coordsSwitch.configure(text="rectangle")
                 self.radiusFrame.grid_remove()
             else:
-                self.coordsSwitch.configure(text="Point")
+                self.coordsSwitch.configure(text="point")
                 self.radiusFrame.grid()
                 
         self.coordsSwitch = ctk.CTkSwitch(self.locationFrame,
-            text="Point",
+            text="point",
             variable=self.coordsMode,
             onvalue="rectangle",
             offvalue="point",
@@ -140,13 +140,65 @@ class App(ctk.CTk):
         ctk.CTkLabel(self.radiusFrame, text="Km").grid(row=4, column=2, padx=4, pady=5, sticky="w")
         
         #Time
-        self.locationFrame = ctk.CTkFrame(self.dataSelectionFrame)
-        self.locationFrame.grid(row=4, column=0, sticky="ew")
-        ctk.CTkLabel(self.locationFrame, text="Time", font=("Comic Sans MS", 18, "bold")).grid(row=0, column=0, padx=10, pady=5, sticky="w")
+        self.timeFrame = ctk.CTkFrame(self.dataSelectionFrame)
+        self.timeFrame.grid(row=4, column=0, sticky="ew")
+        ctk.CTkLabel(self.timeFrame, text="Time", font=("Comic Sans MS", 18, "bold")).grid(row=0, column=0, padx=10, pady=5, sticky="w")
+        ctk.CTkLabel(self.timeFrame, text="Start : ").grid(row=1, column=0, padx=10, pady=5, sticky="w")
+        self.timeStartFrame = ctk.CTkFrame(self.timeFrame)
+        self.timeStartFrame.grid(row=1, column=1)
         
+        self.timeStartYear = ctk.CTkEntry(self.timeStartFrame, placeholder_text="YYYY", width=50)
+        self.timeStartYear.grid(row=0,column=0, padx=1,pady=5)
+        self.timeStartMonth = ctk.CTkEntry(self.timeStartFrame, placeholder_text="MM", width=40)
+        self.timeStartMonth.grid(row=0,column=1, padx=1,pady=5)
+        self.timeStartDay = ctk.CTkEntry(self.timeStartFrame, placeholder_text="DD", width=40)
+        self.timeStartDay.grid(row=0,column=2, padx=1,pady=5)
         
+        self.timeStartHour = ctk.CTkEntry(self.timeStartFrame, placeholder_text="HH", width=40)
+        self.timeStartHour.grid(row=0,column=3, padx=(10,1),pady=5)
+        self.timeStartMin = ctk.CTkEntry(self.timeStartFrame, placeholder_text="MM", width=40)
+        self.timeStartMin.grid(row=0,column=4, padx=1,pady=5)
+        self.timeStartSec = ctk.CTkEntry(self.timeStartFrame, placeholder_text="SS", width=40)
+        self.timeStartSec.grid(row=0,column=5, padx=1,pady=5)
         
+        ctk.CTkLabel(self.timeFrame, text="Stop : ").grid(row=2, column=0, padx=10, pady=5, sticky="w")
+        self.timeStopFrame = ctk.CTkFrame(self.timeFrame)
+        self.timeStopFrame.grid(row=2, column=1)
         
+        self.timeStopYear = ctk.CTkEntry(self.timeStopFrame, placeholder_text="YYYY", width=50)
+        self.timeStopYear.grid(row=0,column=0, padx=1,pady=5)
+        self.timeStopMonth = ctk.CTkEntry(self.timeStopFrame, placeholder_text="MM", width=40)
+        self.timeStopMonth.grid(row=0,column=1, padx=1,pady=5)
+        self.timeStopDay = ctk.CTkEntry(self.timeStopFrame, placeholder_text="DD", width=40)
+        self.timeStopDay.grid(row=0,column=2, padx=1,pady=5)
+        
+        self.timeStopHour = ctk.CTkEntry(self.timeStopFrame, placeholder_text="HH", width=40)
+        self.timeStopHour.grid(row=0,column=3, padx=(10,1),pady=5)
+        self.timeStopMin = ctk.CTkEntry(self.timeStopFrame, placeholder_text="MM", width=40)
+        self.timeStopMin.grid(row=0,column=4, padx=1,pady=5)
+        self.timeStopSec = ctk.CTkEntry(self.timeStopFrame, placeholder_text="SS", width=40)
+        self.timeStopSec.grid(row=0,column=5, padx=1,pady=5)
+        
+        #sampling mode
+        ctk.CTkLabel(self.timeFrame, text="Time mode").grid(row=3, column=0, padx=10, pady=5, sticky="w")
+        self.timeMode = ctk.StringVar(value="point")        
+        def updateTimeMode():
+            if self.timeMode.get() == "period":
+                self.timeSwitch.configure(text="period")
+                self.timeStopFrame.grid()
+            else:
+                self.timeSwitch.configure(text="point")
+                self.timeStopFrame.grid_remove()
+                
+                
+        self.timeSwitch = ctk.CTkSwitch(self.timeFrame,
+            text="point",
+            variable=self.timeMode,
+            onvalue="period",
+            offvalue="point",
+            command=updateTimeMode
+        )
+        self.timeSwitch.grid(row=3, column=1, padx=10, pady=5, sticky="w")
         
         # # height slider
         # self.heightBar = ctk.CTkSlider(
