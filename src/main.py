@@ -47,7 +47,7 @@ class App(ctk.CTk):
 
         if self.image == None:
             # display no data
-            self.image = self.create_no_data_image()
+            self.image = self.createNoDataImage()
         # udpate ui base on image
         self.updateDisplayFrame()
 
@@ -104,7 +104,7 @@ class App(ctk.CTk):
         )
         self.imageLabel.configure(image=self.displayImage)
 
-    def create_no_data_image(self):
+    def createNoDataImage(self):
         width, height = 400, 300
 
         image = Image.new("RGB", (width, height), "#242424")
