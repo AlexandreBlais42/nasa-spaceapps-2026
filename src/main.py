@@ -55,6 +55,12 @@ class App(ctk.CTk):
         self.updateDisplayFrame()
 
     def paramsFrameDef(self):
+        
+        self.time = datetime.datetime.now()
+        self.selected = []
+        self.coords = ((0,0),(0,0))
+        
+        
         # frame
         self.dataSelectionFrame = ctk.CTkFrame(self.mainFrame)
         self.dataSelectionFrame.grid(row=0, column=0, sticky="nsw", padx=5, pady=5)
@@ -78,7 +84,6 @@ class App(ctk.CTk):
         with open("src/variables.txt", "r") as f:
             self.variablesList = f.read().splitlines()
         self.variables = {}
-        self.selected = []
         self.variablesText = ctk.CTkLabel(
             self.dataSelectionFrame, text="Variables selected : None"
         )
@@ -210,21 +215,21 @@ class App(ctk.CTk):
         
         #sampling mode
         ctk.CTkLabel(self.timeFrame, text="Time mode").grid(row=3, column=0, padx=10, pady=5, sticky="w")
-        self.timeMode = ctk.StringVar(value="point")        
+        self.timeMode = ctk.StringVar(value="period")        
         def updateTimeMode():
-            if self.timeMode.get() == "period":
+            if self.timeMode.get() == "point":
                 self.timeSwitch.configure(text="period")
                 self.timeStopFrame.grid()
             else:
-                self.timeSwitch.configure(text="point")
+                self.timeSwitch.configure(text="period")
                 self.timeStopFrame.grid_remove()
                 
                 
         self.timeSwitch = ctk.CTkSwitch(self.timeFrame,
-            text="point",
+            text="period",
             variable=self.timeMode,
-            onvalue="period",
-            offvalue="point",
+            onvalue="point",
+            offvalue="period",
             command=updateTimeMode
         )
         self.timeSwitch.grid(row=3, column=1, padx=10, pady=5, sticky="w")
