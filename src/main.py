@@ -49,8 +49,9 @@ class App(ctk.CTk):
         )
         self.paramsTitle.grid(row=0, column=0)
 
-        # time param
+        # parmeters
 
+        # send button
         self.sendRequestButton = ctk.CTkButton(
             self.dataSelectionFrame,
             text="Send Request",
