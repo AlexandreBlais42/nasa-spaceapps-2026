@@ -41,7 +41,7 @@ class App(ctk.CTk):
 
     def sendRequest(self):
         time = datetime.datetime.now()
-        height_meters = 10
+        height_meters = int(self.heightBar.get())
         coords = ((83.3362128, -141.00275), (41.6765597, -52.3237664))
         self.image = get_image_map(time, height_meters, coords, dimensions=[400, 300])
 
@@ -63,6 +63,16 @@ class App(ctk.CTk):
         self.paramsTitle.grid(row=0, column=0)
 
         # parmeters
+        # height slider
+        self.heightBar = ctk.CTkSlider(
+            self.dataSelectionFrame,
+            from_=0,
+            to=10,
+            number_of_steps=10,
+            command=self.updateHeight,
+        )
+        self.heightBar.grid(row=1, column=0, padx=10, pady=10)
+        self.heightBar.set(0)
 
         # send button
         self.sendRequestButton = ctk.CTkButton(
@@ -72,7 +82,7 @@ class App(ctk.CTk):
             width=180,
             height=20,
         )
-        self.sendRequestButton.grid(row=1, column=0, pady=5)
+        self.sendRequestButton.grid(row=2, column=0, pady=5)
 
     def initDisplayFrame(self):
         # frame
@@ -120,6 +130,9 @@ class App(ctk.CTk):
         draw.text((x, y), text, fill="#888888", font=font)
 
         return image
+
+    def updateHeight(self, value):
+        self.heightBar.configure(text=f"Height: {int(value)}")
 
 
 if __name__ == "__main__":
