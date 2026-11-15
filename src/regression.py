@@ -16,21 +16,19 @@ def polynomial_regression(x, y, max_degree=9):
     # Test different polynomial degrees
     results = {}
 
+    # Use a valid number of cross-validation folds
+    cv = min(5, len(X))
+
     for degree in range(1, max_degree + 1):
 
         model = make_pipeline(PolynomialFeatures(degree=degree), LinearRegression())
 
-        # Perform cross-validation
-        scores = cross_val_score(model, X, y, cv=5, scoring="r2")
+        scores = cross_val_score(model, X, y, cv=cv, scoring="r2")
 
         results[degree] = scores.mean()
 
-        print(f"Degree {degree}: R² = {scores.mean():.3f}")
-
     # Select the best degree
     best_degree = max(results, key=results.get)
-
-    print(f"\nBest degree: {best_degree}")
 
     # Train the final model
     model = make_pipeline(PolynomialFeatures(degree=best_degree), LinearRegression())
@@ -41,21 +39,16 @@ def polynomial_regression(x, y, max_degree=9):
     X_plot = np.linspace(X.min(), X.max(), 300).reshape(-1, 1)
     y_pred = model.predict(X_plot)
 
-    # Calculate R²
-    r2 = model.score(X, y)
+    # Create figure
+    fig, ax = plt.subplots(figsize=(7, 4))
 
-    # Display results
-    plt.figure(figsize=(9, 5))
-    plt.scatter(X, y, label="Data")
-    plt.plot(X_plot, y_pred, color="red", label="Polynomial regression")
+    ax.scatter(X, y, label="Data")
+    ax.plot(X_plot, y_pred, color="red", label="Polynomial regression")
 
-    plt.title(f"Polynomial Regression (Degree {best_degree})")
-    plt.xlabel("X")
-    plt.ylabel("Y")
-    plt.legend()
-    plt.grid()
-    plt.show()
+    ax.set_title(f"Polynomial Regression (Degree {best_degree})")
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.legend()
+    ax.grid()
 
-    print(f"R² (training): {r2:.3f}")
-
-    return model, best_degree, results
+    return fig, model, best_degree, results

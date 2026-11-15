@@ -3,6 +3,8 @@ import customtkinter as ctk
 from PIL import Image, ImageDraw, ImageFont
 import datetime
 import regression
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import numpy as np
 
 
 class App(ctk.CTk):
@@ -42,7 +44,7 @@ class App(ctk.CTk):
 
     def sendRequest(self):
         time = datetime.datetime.now()
-        height_meters = int(self.heightBar.get())
+        height_meters = 2
         coords = ((83.3362128, -141.00275), (41.6765597, -52.3237664))
         self.image = get_image_map(time, height_meters, coords, dimensions=[400, 300])
 
@@ -61,60 +63,84 @@ class App(ctk.CTk):
         self.paramsTitle = ctk.CTkLabel(
             self.dataSelectionFrame, text="Parameters", font=("Arial", 24, "bold")
         )
-        self.paramsTitle.grid(row=0, column=0,sticky="w")
+        self.paramsTitle.grid(row=0, column=0, sticky="w")
         # parameters
-        
-        #variables
+        self.regressionButton = ctk.CTkButton(
+            self.dataSelectionFrame, text="Run Regression", command=self.testRegression
+        )
+
+        self.regressionButton.grid(row=6, column=0, pady=5)
+
+        # variables
         self.variablesFrame = ctk.CTkScrollableFrame(self.dataSelectionFrame, width=300)
-        self.variablesFrame.grid(row=1,column=0, padx=10, pady=5,sticky="w")
-        
-        with open("src/variables.txt", 'r') as f:
+        self.variablesFrame.grid(row=1, column=0, padx=10, pady=5, sticky="w")
+
+        with open("src/variables.txt", "r") as f:
             self.variablesList = f.read().splitlines()
         self.variables = {}
         self.selected = []
-        self.variablesText = ctk.CTkLabel(self.dataSelectionFrame, text="Variables selected : None")
+        self.variablesText = ctk.CTkLabel(
+            self.dataSelectionFrame, text="Variables selected : None"
+        )
         self.variablesText.grid(row=2, column=0, padx=10, pady=5, sticky="w")
-        
+
         def updateVar(v):
-            if self.variables[v].get()==1:
+            if self.variables[v].get() == 1:
                 self.selected.append(v)
             else:
                 self.selected.remove(v)
-            self.variablesText.configure(text="Variables selected : " + ", ".join(self.selected))
-            
+            self.variablesText.configure(
+                text="Variables selected : " + ", ".join(self.selected)
+            )
+
         for v in self.variablesList:
             var = ctk.BooleanVar(value=False)
             self.variables[v] = var
-            ctk.CTkCheckBox(self.variablesFrame, text=v, variable=var, command=lambda v=v: updateVar(v)).pack(anchor="w", padx=10, pady=5)
-        
-        
-        
-        
-        #location
+            ctk.CTkCheckBox(
+                self.variablesFrame,
+                text=v,
+                variable=var,
+                command=lambda v=v: updateVar(v),
+            ).pack(anchor="w", padx=10, pady=5)
+
+        # location
         self.locationFrame = ctk.CTkFrame(self.dataSelectionFrame)
         self.locationFrame.grid(row=3, column=0, sticky="ew")
-        ctk.CTkLabel(self.locationFrame, text="Location", font=("Comic Sans MS", 18, "bold")).grid(row=0, column=0, padx=10, pady=5, sticky="w")
-        
-        ctk.CTkLabel(self.locationFrame, text="Region").grid(row=1, column=0, padx=10, pady=5, sticky="w")
-        self.region = ctk.CTkComboBox(self.locationFrame, values=["Montreal", "Sherbrooke", "Quebec", "Toronto"])
+        ctk.CTkLabel(
+            self.locationFrame, text="Location", font=("Comic Sans MS", 18, "bold")
+        ).grid(row=0, column=0, padx=10, pady=5, sticky="w")
+
+        ctk.CTkLabel(self.locationFrame, text="Region").grid(
+            row=1, column=0, padx=10, pady=5, sticky="w"
+        )
+        self.region = ctk.CTkComboBox(
+            self.locationFrame, values=["Montreal", "Sherbrooke", "Quebec", "Toronto"]
+        )
         self.region.set("Montreal")
         self.region.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
-        
-        ctk.CTkLabel(self.locationFrame, text="Latitude N/S").grid(row=2, column=0, padx=10, pady=5, sticky="w")
+
+        ctk.CTkLabel(self.locationFrame, text="Latitude N/S").grid(
+            row=2, column=0, padx=10, pady=5, sticky="w"
+        )
         self.latitude1 = ctk.CTkEntry(self.locationFrame, placeholder_text="0.000")
         self.latitude2 = ctk.CTkEntry(self.locationFrame, placeholder_text="0.000")
         self.latitude1.grid(row=2, column=1, padx=10, pady=5, sticky="w")
         self.latitude2.grid(row=2, column=2, padx=10, pady=5, sticky="w")
-        
-        ctk.CTkLabel(self.locationFrame, text="Longitude W/E").grid(row=3, column=0, padx=10, pady=5, sticky="w")
+
+        ctk.CTkLabel(self.locationFrame, text="Longitude W/E").grid(
+            row=3, column=0, padx=10, pady=5, sticky="w"
+        )
         self.longitude1 = ctk.CTkEntry(self.locationFrame, placeholder_text="0.000")
         self.longitude2 = ctk.CTkEntry(self.locationFrame, placeholder_text="0.000")
         self.longitude1.grid(row=3, column=1, padx=10, pady=5, sticky="w")
         self.longitude2.grid(row=3, column=2, padx=10, pady=5, sticky="w")
-        
-        #sampling mode
-        ctk.CTkLabel(self.locationFrame, text="Sampling mode").grid(row=4, column=0, padx=10, pady=5, sticky="w")
-        self.coordsMode = ctk.StringVar(value="point")        
+
+        # sampling mode
+        ctk.CTkLabel(self.locationFrame, text="Sampling mode").grid(
+            row=4, column=0, padx=10, pady=5, sticky="w"
+        )
+        self.coordsMode = ctk.StringVar(value="point")
+
         def updateCoordsMode():
             if self.coordsMode.get() == "rectangle":
                 self.coordsSwitch.configure(text="Rectangle")
@@ -122,33 +148,36 @@ class App(ctk.CTk):
             else:
                 self.coordsSwitch.configure(text="Point")
                 self.radiusFrame.grid()
-                
-        self.coordsSwitch = ctk.CTkSwitch(self.locationFrame,
+
+        self.coordsSwitch = ctk.CTkSwitch(
+            self.locationFrame,
             text="Point",
             variable=self.coordsMode,
             onvalue="rectangle",
             offvalue="point",
-            command=updateCoordsMode
+            command=updateCoordsMode,
         )
         self.coordsSwitch.grid(row=4, column=1, padx=10, pady=5, sticky="w")
-        
-        #largeur autour d'un point
+
+        # largeur autour d'un point
         self.radiusFrame = ctk.CTkFrame(self.locationFrame, fg_color="transparent")
         self.radiusFrame.grid(row=4, column=2)
-        ctk.CTkLabel(self.radiusFrame, text="Radius :").grid(row=4, column=0, padx=4, pady=5, sticky="e")
+        ctk.CTkLabel(self.radiusFrame, text="Radius :").grid(
+            row=4, column=0, padx=4, pady=5, sticky="e"
+        )
         self.radius = ctk.CTkEntry(self.radiusFrame, placeholder_text="24", width=60)
         self.radius.grid(row=4, column=1, padx=4, pady=5, sticky="w")
-        ctk.CTkLabel(self.radiusFrame, text="Km").grid(row=4, column=2, padx=4, pady=5, sticky="w")
-        
-        #Time
+        ctk.CTkLabel(self.radiusFrame, text="Km").grid(
+            row=4, column=2, padx=4, pady=5, sticky="w"
+        )
+
+        # Time
         self.locationFrame = ctk.CTkFrame(self.dataSelectionFrame)
         self.locationFrame.grid(row=4, column=0, sticky="ew")
-        ctk.CTkLabel(self.locationFrame, text="Time", font=("Comic Sans MS", 18, "bold")).grid(row=0, column=0, padx=10, pady=5, sticky="w")
-        
-        
-        
-        
-        
+        ctk.CTkLabel(
+            self.locationFrame, text="Time", font=("Comic Sans MS", 18, "bold")
+        ).grid(row=0, column=0, padx=10, pady=5, sticky="w")
+
         # # height slider
         # self.heightBar = ctk.CTkSlider(
         #     self.dataSelectionFrame,
@@ -219,6 +248,34 @@ class App(ctk.CTk):
 
     def updateHeight(self, value):
         self.heightBar.configure(text=f"Height: {int(value)}")
+
+    def displayRegression(self, x, y):
+
+        # Generate polynomial regression
+        fig, model, degree, results = regression.polynomial_regression(x, y)
+
+        # Clear previous graph
+        if hasattr(self, "canvas"):
+            self.canvas.get_tk_widget().destroy()
+
+        # Display graph inside CustomTkinter
+        self.canvas = FigureCanvasTkAgg(fig, master=self.displayFrame)
+        self.canvas.draw()
+
+        self.canvas.get_tk_widget().grid(row=2, column=0, padx=10, pady=10)
+
+        # Store model
+        self.regressionModel = model
+
+        print("Best degree:", degree)
+        print("R²:", model.score(np.array(x).reshape(-1, 1), y))
+
+    def testRegression(self):
+
+        x = [1, 2, 3, 4, 5, 6, 7, 8]
+        y = [2, 5, 10, 17, 26, 37, 50, 65]
+
+        self.displayRegression(x, y)
 
 
 if __name__ == "__main__":
