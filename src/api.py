@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from requests import get
 from base64 import b64encode
-from typing import Tuple, Dict,  List
+from typing import Tuple, Dict, List
 import pandas as pd
 from PIL import Image
 import io
@@ -18,6 +18,7 @@ credentials = {
     "password": "25et0qbpQ3VLB156INhp",
 }
 
+
 def headers() -> Dict[str, str]:
     logins = f"{credentials["username"]}:{credentials["password"]}"
     authorization = f"Basic {b64encode(logins.encode()).decode()}"
@@ -27,7 +28,9 @@ def headers() -> Dict[str, str]:
     }
 
 
-def get_data_range(start_time, delta, height_meters: int, coordinates: Tuple[float, float]):
+def get_data_range(
+    start_time, delta, height_meters: int, coordinates: Tuple[float, float]
+):
     end_time = start_time + delta
     url = f"{BASE_URL}/{start_time.strftime(TIME_FORMAT)}--{end_time.strftime(TIME_FORMAT)}/t_{height_meters}m/{coordinates[0]},{coordinates[1]}/json"
     response = get(url, headers=headers())
@@ -47,7 +50,12 @@ def get_data_range(start_time, delta, height_meters: int, coordinates: Tuple[flo
     return pd.DataFrame.from_dict(data)
 
 
-def get_image_map(time: datetime, height_meters: int, coords: Tuple[Tuple[float, float], Tuple[float, float]], dimensions: Tuple[int, int]) -> Image.Image:
+def get_image_map(
+    time: datetime,
+    height_meters: int,
+    coords: Tuple[Tuple[float, float], Tuple[float, float]],
+    dimensions: Tuple[int, int],
+) -> Image.Image:
     coordinates_str = "_".join(map(lambda x: ",".join(map(str, x)), coords))
     print(coordinates_str)
 
@@ -56,7 +64,8 @@ def get_image_map(time: datetime, height_meters: int, coords: Tuple[Tuple[float,
 
     if not response.ok:
         print(response.text)
-        raise EnvironmentError()
+        # raise EnvironmentError()
+        return None
 
     return Image.open(io.BytesIO(response.content))
 
@@ -64,5 +73,10 @@ def get_image_map(time: datetime, height_meters: int, coords: Tuple[Tuple[float,
 if __name__ == "__main__":
     sherbrooke_coords = (45.40008, -71.89908)
 
-    img = get_image_map(datetime.now(), 2, ((83.3362128, -141.00275), (41.6765597, -52.3237664)), (1024, 1024))
+    img = get_image_map(
+        datetime.now(),
+        2,
+        ((83.3362128, -141.00275), (41.6765597, -52.3237664)),
+        (1024, 1024),
+    )
     img.save("file.png")
