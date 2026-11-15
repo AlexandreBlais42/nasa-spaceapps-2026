@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
 from requests import get
 from base64 import b64encode
-from typing import Tuple, Dict, Optional
+from typing import Tuple, Dict,  List
 import pandas as pd
+from PIL import Image
+import io
 import json
 
 # URL format:
@@ -45,7 +47,22 @@ def get_data_range(start_time, delta, height_meters: int, coordinates: Tuple[flo
     return pd.DataFrame.from_dict(data)
 
 
+def get_image_map(time: datetime, height_meters: int, coords: Tuple[Tuple[float, float], Tuple[float, float]], dimensions: Tuple[int, int]) -> Image.Image:
+    coordinates_str = "_".join(map(lambda x: ",".join(map(str, x)), coords))
+    print(coordinates_str)
+
+    url = f"{BASE_URL}/{time.strftime(TIME_FORMAT)}/t_{height_meters}m/{coordinates_str}:{dimensions[0]}x{dimensions[1]}/png"
+    response = get(url, headers=headers())
+
+    if not response.ok:
+        print(response.text)
+        raise EnvironmentError()
+
+    return Image.open(io.BytesIO(response.content))
+
+
 if __name__ == "__main__":
     sherbrooke_coords = (45.40008, -71.89908)
-    data = get_data_range(datetime.now(), timedelta(days=2), 2, sherbrooke_coords)
-    print(data)
+
+    img = get_image_map(datetime.now(), 2, ((83.3362128, -141.00275), (41.6765597, -52.3237664)), (1024, 1024))
+    img.save("file.png")
