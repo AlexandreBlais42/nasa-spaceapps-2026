@@ -1,9 +1,8 @@
-import customtkinter as ctk
-import tkinter as tk
-from PIL import Image
+import sys
+from PyQt6.QtWidgets import QApplication, QMainWindow
 
 
-class App(ctk.CTk):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
@@ -81,5 +80,7 @@ class App(ctk.CTk):
 
 
 if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
