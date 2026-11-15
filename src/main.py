@@ -54,7 +54,7 @@ class App(ctk.CTk):
     def paramsFrameDef(self):
         # frame
         self.dataSelectionFrame = ctk.CTkFrame(self.mainFrame)
-        self.dataSelectionFrame.grid(row=0, column=0, sticky="wn", padx=5, pady=5)
+        self.dataSelectionFrame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
         # title
         self.paramsTitle = ctk.CTkLabel(
@@ -62,7 +62,48 @@ class App(ctk.CTk):
         )
         self.paramsTitle.grid(row=0, column=0)
 
-        # parmeters
+        # parameters
+        #location
+        self.locationFrame = ctk.CTkFrame(self.dataSelectionFrame)
+        self.locationFrame.grid(row=2, column=0, sticky="ew")
+        ctk.CTkLabel(self.locationFrame, text="Location", font=("Comic Sans MS", 18, "bold")).grid(row=0, column=0, padx=10, pady=5, sticky="w")
+        
+        ctk.CTkLabel(self.locationFrame, text="Region").grid(row=1, column=0, padx=10, pady=5, sticky="w")
+        self.region = ctk.CTkComboBox(self.locationFrame, values=["Montreal", "Sherbrooke", "Quebec", "Toronto"])
+        self.region.set("Montreal")
+        self.region.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
+        
+        ctk.CTkLabel(self.locationFrame, text="Latitude N/S").grid(row=2, column=0, padx=10, pady=5, sticky="w")
+        self.latitude1 = ctk.CTkEntry(self.locationFrame, placeholder_text="0.000")
+        self.latitude2 = ctk.CTkEntry(self.locationFrame, placeholder_text="0.000")
+        self.latitude1.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+        self.latitude2.grid(row=2, column=2, padx=10, pady=5, sticky="w")
+        
+        ctk.CTkLabel(self.locationFrame, text="Longitude W/E").grid(row=3, column=0, padx=10, pady=5, sticky="w")
+        self.longitude1 = ctk.CTkEntry(self.locationFrame, placeholder_text="0.000")
+        self.longitude2 = ctk.CTkEntry(self.locationFrame, placeholder_text="0.000")
+        self.longitude1.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+        self.longitude2.grid(row=3, column=2, padx=10, pady=5, sticky="w")
+        
+        ctk.CTkLabel(self.locationFrame, text="Sampling mode").grid(row=4, column=0, padx=10, pady=5, sticky="w")
+        self.coordsMode = ctk.StringVar(value="point")        
+        def updateCoordsMode():
+            if self.coordsMode.get() == "rectangle":
+                self.coordsSwitch.configure(text="Rectangle")
+            else:
+                self.coordsSwitch.configure(text="Point")
+        self.coordsSwitch = ctk.CTkSwitch(self.locationFrame,
+            text="Point",
+            variable=self.coordsMode,
+            onvalue="rectangle",
+            offvalue="point",
+            command=updateCoordsMode
+        )
+        self.coordsSwitch.grid(row=4, column=1, padx=10, pady=5, sticky="w")
+        
+        
+        
+        
         # height slider
         self.heightBar = ctk.CTkSlider(
             self.dataSelectionFrame,
@@ -82,7 +123,7 @@ class App(ctk.CTk):
             width=180,
             height=20,
         )
-        self.sendRequestButton.grid(row=2, column=0, pady=5)
+        self.sendRequestButton.grid(row=5, column=0, pady=5)
 
     def initDisplayFrame(self):
         # frame
