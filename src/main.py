@@ -2,6 +2,7 @@ from api import get_image_map
 import customtkinter as ctk
 from PIL import Image, ImageDraw, ImageFont
 import datetime
+import regression
 
 
 class App(ctk.CTk):
