@@ -322,7 +322,6 @@ class App(ctk.CTk):
         print("R²:", model.score(np.array(x).reshape(-1, 1), y))
 
     def testRegression(self):
-
         x = [1, 2, 3, 4, 5, 6, 7, 8]
         y = [2, 5, 10, 17, 26, 37, 50, 65]
 
