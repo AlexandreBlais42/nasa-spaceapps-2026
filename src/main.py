@@ -6,18 +6,32 @@ import regression
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 
-urbanDictionnary = """
-        Montreal    : 45.50884, -73.58781
-        Sherbrooke  : 45.40008, -71.89908
-        Quebec      : 46.82985, -71.25403
-        Toronto     : 43.70011, -79.41630
-        Vancouver   : 49.24966, -123.1193
-        Ottawa      : 45.41117, -75.69812
-        Edmonton    : 53.55014, -113.4687
-        Victoria    : 48.43294, -123.3693
-        Winnipeg    : 49.88440, -97.14704
-        Regina      : 50.45008, -104.6178
-        """
+urbanDictionnary = {
+    "Montreal"      : (45.50884, -73.58781),
+    "Sherbrooke"    : (45.40008, -71.89908),
+    "Quebec"        : (46.82985, -71.25403),
+    "Toronto"       : (43.70011, -79.41630),
+    "Vancouver"     : (49.24966, -123.1193),
+    "Ottawa"        : (45.41117, -75.69812),
+    "Edmonton"      : (53.55014, -113.4687),
+    "Victoria"      : (48.43294, -123.3693),
+    "Winnipeg"      : (49.88440, -97.14704),
+    "Regina"        : (50.45008, -104.6178),
+    "Bangkok"       : (13.75398, 100.50144),
+    "Paris"         : (48.85341,   2.34880),
+    "Rome"          : (41.89193,  12.51133),
+    "Venice"        : (45.43713,  12.33265),
+    "New York City" : (40.71427, -74.00597),
+    "Boston"        : (42.35843, -71.05977),
+    "Philadelphia"  : (39.95233, -75.16379),
+    "Buenos Aires"  : (-34.6131, -58.37723),
+    "Madrid"        : (40.41650,  -3.70256),
+    "Barcelona"     : (41.38879,   2.15899),
+    "Sydney"        : (-33.86785, 151.2073),
+    "Lima"          : (-12.04318, -77.0282),
+    "Wellington"    : (-32.55588, 148.9451),
+    "Manila"        : (14.604200, 120.9822),
+}
 
 class App(ctk.CTk):
     def __init__(self):
@@ -141,7 +155,7 @@ class App(ctk.CTk):
             setEntry(self.latitude2,urbanDictionnary[value][1])
         
         self.region = ctk.CTkComboBox(
-            self.locationFrame, command=region_changed, values=["Montreal", "Sherbrooke", "Quebec", "Toronto", "Vancouver", "Ottawa", "Edmonton", "Victoria", "Winnipeg", "Regina"]
+            self.locationFrame, values=['Bangkok', 'Barcelona', 'Boston', 'Buenos Aires', 'Edmonton', 'Lima', 'Madrid', 'Manila', 'Montreal', 'New York City', 'Ottawa', 'Paris', 'Philadelphia', 'Quebec', 'Regina', 'Rome', 'Sherbrooke', 'Sydney', 'Toronto', 'Vancouver', 'Venice', 'Victoria', 'Wellington', 'Winnipeg']
         )
         
         self.region.set("Montreal")
