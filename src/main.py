@@ -70,8 +70,11 @@ class App(ctk.CTk):
         
         self.time = datetime.datetime.now()
         self.selected = []
-        self.coords = ((0,0),(0,0))
+        self.coords = [[0,0],[0,0]]
         
+        def setEntry(entry, text):
+            entry.delete(0, "end")
+            entry.insert(0, text)
         
         # frame
         self.dataSelectionFrame = ctk.CTkFrame(self.mainFrame)
@@ -130,8 +133,15 @@ class App(ctk.CTk):
         ctk.CTkLabel(self.locationFrame, text="Region").grid(
             row=1, column=0, padx=10, pady=5, sticky="w"
         )
+        
+        def region_changed(value):
+            self.coords[0][0] = urbanDictionnary[value][0]
+            self.coords[0][1] = urbanDictionnary[value][1]
+            setEntry(self.latitude1,urbanDictionnary[value][0])
+            setEntry(self.latitude2,urbanDictionnary[value][1])
+        
         self.region = ctk.CTkComboBox(
-            self.locationFrame, values=["Montreal", "Sherbrooke", "Quebec", "Toronto", "Vancouver", "Ottawa", "Edmonton", "Victoria", "Winnipeg", "Regina"]
+            self.locationFrame, command=region_changed, values=["Montreal", "Sherbrooke", "Quebec", "Toronto", "Vancouver", "Ottawa", "Edmonton", "Victoria", "Winnipeg", "Regina"]
         )
         
         self.region.set("Montreal")
