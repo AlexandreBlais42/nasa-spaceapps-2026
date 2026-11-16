@@ -51,7 +51,7 @@ class App(ctk.CTk):
         self.build()
 
     def build(self):
-        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
 
         # Title
@@ -69,9 +69,20 @@ class App(ctk.CTk):
         self.initDisplayFrame()
 
     def sendRequest(self):
+        """
+        stuff a faire mais flemme pcq je suis seule
+        time = timestart (les 6 boites)
+        if timeSwitch is on, time = timestart -- timestop :P timeStep 
+        
+        les variables sont dans selected
+        
+        le coords c'est latitude1, latitude2
+        if coordsMode is on faut donner aussi la résolution et prendre (lat1,lon1),(lat2,lon2)
+        """
+        
         time = datetime.datetime.now()
         height_meters = 2
-        coords = ((83.3362128, -141.00275), (41.6765597, -52.3237664))
+        coords = ((self.latitude1.get(), self.longitude1.get()), (self.latitude1.get(), self.longitude2.get()))
         self.image = get_image_map(time, height_meters, coords, dimensions=[400, 300])
 
         if self.image == None:
@@ -148,14 +159,15 @@ class App(ctk.CTk):
             row=1, column=0, padx=10, pady=5, sticky="w"
         )
         
-        def region_changed(value):
+        def regionChange(value):
             self.coords[0][0] = urbanDictionnary[value][0]
             self.coords[0][1] = urbanDictionnary[value][1]
             setEntry(self.latitude1,urbanDictionnary[value][0])
             setEntry(self.latitude2,urbanDictionnary[value][1])
+            print(self.latitude1.get())
         
         self.region = ctk.CTkComboBox(
-            self.locationFrame, values=['Bangkok', 'Barcelona', 'Boston', 'Buenos Aires', 'Edmonton', 'Lima', 'Madrid', 'Manila', 'Montreal', 'New York City', 'Ottawa', 'Paris', 'Philadelphia', 'Quebec', 'Regina', 'Rome', 'Sherbrooke', 'Sydney', 'Toronto', 'Vancouver', 'Venice', 'Victoria', 'Wellington', 'Winnipeg']
+            self.locationFrame, command=regionChange, values=['Bangkok', 'Barcelona', 'Boston', 'Buenos Aires', 'Edmonton', 'Lima', 'Madrid', 'Manila', 'Montreal', 'New York City', 'Ottawa', 'Paris', 'Philadelphia', 'Quebec', 'Regina', 'Rome', 'Sherbrooke', 'Sydney', 'Toronto', 'Vancouver', 'Venice', 'Victoria', 'Wellington', 'Winnipeg']
         )
         
         self.region.set("Montreal")
@@ -176,6 +188,9 @@ class App(ctk.CTk):
         self.longitude2 = ctk.CTkEntry(self.locationFrame, placeholder_text="0.000")
         self.longitude1.grid(row=3, column=1, padx=10, pady=5, sticky="w")
         self.longitude2.grid(row=3, column=2, padx=10, pady=5, sticky="w")
+        
+        self.latitude2.grid_remove()
+        self.longitude2.grid_remove()
 
         # sampling mode
         ctk.CTkLabel(self.locationFrame, text="Sampling mode").grid(
@@ -187,9 +202,13 @@ class App(ctk.CTk):
             if self.coordsMode.get() == "rectangle":
                 self.coordsSwitch.configure(text="rectangle")
                 self.radiusFrame.grid_remove()
+                self.latitude2.grid()
+                self.longitude2.grid()
             else:
                 self.coordsSwitch.configure(text="point")
                 self.radiusFrame.grid()
+                self.latitude2.grid_remove()
+                self.longitude2.grid_remove()
                 
         self.coordsSwitch = ctk.CTkSwitch(self.locationFrame,
             text="point",
@@ -202,7 +221,7 @@ class App(ctk.CTk):
 
         # largeur autour d'un point
         self.radiusFrame = ctk.CTkFrame(self.locationFrame, fg_color="transparent")
-        self.radiusFrame.grid(row=4, column=2)
+        self.radiusFrame.grid(row=2, column=2)
         ctk.CTkLabel(self.radiusFrame, text="Radius :").grid(
             row=4, column=0, padx=4, pady=5, sticky="e"
         )
@@ -251,7 +270,7 @@ class App(ctk.CTk):
         self.timeStopSec.grid(row=0,column=5, padx=1,pady=5)
         self.timeStopFrame.grid_remove()
         
-        #sampling mode
+        #time mode
         ctk.CTkLabel(self.timeFrame, text="Time mode").grid(row=3, column=0, padx=10, pady=5, sticky="w")
         self.timeMode = ctk.StringVar(value="period")        
         def updateTimeMode():
@@ -271,6 +290,12 @@ class App(ctk.CTk):
             command=updateTimeMode
         )
         self.timeSwitch.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+        
+        self.timeStepFrame = ctk.CTkFrame(self.timeFrame)
+        self.timeStepFrame.grid(row=3, column=1, columnspan=2, padx=10, pady=5, sticky="e")
+        ctk.CTkLabel(self.timeStepFrame, text="Step :").grid(row=0, column=0, padx=0, pady=5, sticky="w")
+        self.timeStep = ctk.CTkEntry(self.timeStepFrame, placeholder_text="1H", width=40)
+        self.timeStep.grid(row=0,column=1, padx=10,pady=5, sticky="w")
         
         # # height slider
         # self.heightBar = ctk.CTkSlider(
@@ -297,8 +322,10 @@ class App(ctk.CTk):
         # frame
         self.displayFrame = ctk.CTkFrame(self.mainFrame)
         self.displayFrame.grid(
-            row=0, column=1, sticky="w", padx=5, pady=5, columnspan=2
+            row=0, column=1, sticky="nsew", padx=5, pady=5,
         )
+        self.displayFrame.rowconfigure(1, weight=1)
+        self.displayFrame.columnconfigure(0, weight=1)
 
         # display image
         if self.image:
@@ -314,7 +341,7 @@ class App(ctk.CTk):
         self.imageLabel = ctk.CTkLabel(
             self.displayFrame, image=self.displayImage, text=""
         )
-        self.imageLabel.grid(row=1, column=0, pady=20)
+        self.imageLabel.grid(row=1, column=0, sticky="nsew", padx=20, pady=20)
 
     def updateDisplayFrame(self):
         self.imageLabel.configure(image=None)
